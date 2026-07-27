@@ -1,54 +1,68 @@
-let currentYear = new Date().getFullYear();
-let currentLang = 'ja';
-let startDayOfWeek = 0;
-let showRokuyo = false;
-
+// --- 多言語対応データの定義 ---
 const i18n = {
     ja: { labels: ["モード","言語","週開始","六曜","祝日一覧"], nav: ["前年","次年"], modal: ["年を選択","キャンセル"], days: ["日","月","火","水","木","金","土"], months: m=>`${m+1}月` },
     en: { labels: ["THEME","LANGUAGE","WEEK START","ROKUYO","Holiday List"], nav: ["Prev Year","Next Year"], modal: ["Select Year","Cancel"], days: ["SUN","MON","TUE","WED","THU","FRI","SAT"], months: m=>["January","February","March","April","May","June","July","August","September","October","November","December"][m] },
     fr: { labels: ["MODE","LANGUE","DÉBUT","ROKUYO","Jours fériés"], nav: ["Année préc.","Année suiv."], modal: ["Choisir l'année","Annuler"], days: ["DIM","LUN","MAR","MER","JEU","VEN","SAM"], months: m=>["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][m] },
-    de: { labels: ["MODUS","SPRACHE","START","ROKUYO","Feiertage"], nav: ["Vorheriges Jahr","Nächstes Jahr"], modal: ["Jahr wählen","Abbrechen"], days: ["SO","MO","DI","MI","DO","FR","SA"], months: m=>["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"][m] },
-    es: { labels: ["MODO","IDIOMA","INICIO","ROKUYO","Lista de festivos"], nav: ["Año anterior","Año siguiente"], modal: ["Elegir año","Cancelar"], days: ["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"], months: m=>["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][m] },
+    de: { labels: ["MODUS","SPRACHE","START","ROKUYO","Feiertage"], nav: ["Vorheriges Jahr","Nächstes Jahr"], modal: ["Jahr wählen","Abbrechen"], days: ["SO","MO","DI","MI","DO","FR","SA"], months: m=>["Januar","Februar","März","April","Mai","Juin","Juli","Août","September","Oktober","November","Dezember"][m] },
+    es: { labels: ["MODO","IDIOMA","INICIO","ROKUYO","Lista de festivos"], nav: ["Año anterior","Año siguiente"], modal: ["Elegir año","Cancelar"], days: ["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"], months: m=>["Enero","Février","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][m] },
     it: { labels: ["MODO","LINGUA","INIZIO","ROKUYO","Festività"], nav: ["Anno prec.","Anno succ."], modal: ["Scegli anno","Annulla"], days: ["DOM","LUN","MAR","MER","GIO","VEN","SAB"], months: m=>["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"][m] }
 };
 
-function openYearModal() {
-    const modal = document.getElementById('yearModal');
-    const list = document.getElementById('yearList');
-    const overlay = document.getElementById('overlay');
-    const t = i18n[currentLang];
-    document.getElementById('modalTitle').textContent = t.modal[0];
-    document.getElementById('modalCloseBtn').textContent = t.modal[1];
-    list.innerHTML = '';
-    for(let i = currentYear - 50; i <= currentYear + 50; i++) {
-        const item = document.createElement('div');
-        item.className = 'year-item' + (i === currentYear ? ' active' : '');
-        item.textContent = i;
-        item.onclick = () => { currentYear = i; renderCalendar(); closeYearModal(); };
-        list.appendChild(item);
-        if(i === currentYear) setTimeout(() => item.scrollIntoView({block: 'center'}), 10);
-    }
-    modal.classList.add('show'); overlay.classList.add('show');
+// --- URLのハッシュ（#）から最新の状態を都度取得（file:// 対応） ---
+function getAppState() {
+    const hash = window.location.hash.substring(1); // 先頭の # を除く
+    const urlParams = new URLSearchParams(hash);
+    const yearParam = urlParams.get('year');
+    const startParam = urlParams.get('start');
+    const rokuyoParam = urlParams.get('rokuyo');
+
+    return {
+        year: yearParam ? parseInt(yearParam, 10) : new Date().getFullYear(),
+        lang: DEFAULTS.lang,
+        start: startParam ? parseInt(startParam, 10) : 0,
+        rokuyo: rokuyoParam === 'true',
+        theme: urlParams.get('theme') || 'light'   
+    };
 }
 
-function closeYearModal() {
-    document.getElementById('yearModal').classList.remove('show');
-    document.getElementById('overlay').classList.remove('show');
+// --- ハッシュ（#）のユーザー設定値を書き換える ---
+function updateURLParam(key, value) {
+    const hash = window.location.hash.substring(1);
+    const urlParams = new URLSearchParams(hash);
+    urlParams.set(key, value);
+    
+    // ハッシュを書き換える（自動的に hashchange イベントが発火）
+    window.location.hash = urlParams.toString();
 }
 
-function handleOverlayClick() {
-    closeYearModal(); document.getElementById('sidePanel').classList.remove('open');
+// --- 言語切り替え時の処理（ハッシュを連れて隣のフォルダへ） ---
+function navigateLanguage(targetLang) {
+    if (targetLang === DEFAULTS.lang) return;
+    window.location.href = `../${targetLang}/index.html` + window.location.hash;
 }
 
+// --- 祝日データ計算ロジック ---
 function getHolidays(y) {
     const h = {};
-    const add = (m,d,n) => { h[`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`] = n; };
-    const happy = (m,n,nmsg) => {
-        let d = 1 + (7 - new Date(y,m-1,1).getDay() + 1) % 7 + (n-1)*7;
+    const add = (m, d, nmsg) => { 
+        h[`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`] = nmsg; 
+    };
+    const happy = (m, n, nmsg) => {
+        let d = 1 + (7 - new Date(y, m-1, 1).getDay() + 1) % 7 + (n-1)*7;
         add(m, d, nmsg);
     };
-    const easter = (() => { const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),hCalc=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,L=(32+2*e+2*i-hCalc-k)%7,mCalc=Math.floor((a+11*hCalc+22*L)/451),month=Math.floor((hCalc+L-7*mCalc+114)/31),day=((hCalc+L-7*mCalc+114)%31)+1; return new Date(y,month-1,day); })();
-    const addRelativeEaster = (offset, nmsg) => { const d=new Date(easter); d.setDate(d.getDate()+offset); add(d.getMonth()+1, d.getDate(), nmsg); };
+    const easter = (() => { 
+        const a=y%19, b=Math.floor(y/100), c=y%100, d=Math.floor(b/4), e=b%4, f=Math.floor((b+8)/25), g=Math.floor((b-f+1)/3), hCalc=(19*a+b-d-g+15)%30, i=Math.floor(c/4), k=c%4, L=(32+2*e+2*i-hCalc-k)%7, mCalc=Math.floor((a+11*hCalc+22*L)/451), month=Math.floor((hCalc+L-7*mCalc+114)/31), day=((hCalc+L-7*mCalc+114)%31)+1; 
+        return new Date(y, month-1, day); 
+    })();
+    const addRelativeEaster = (offset, nmsg) => { 
+        const d = new Date(easter); 
+        d.setDate(d.getDate() + offset); 
+        h[`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`] = nmsg;
+    };
+
+    const state = getAppState();
+    const currentLang = state.lang;
 
     if (currentLang === 'ja') {
         const data = [
@@ -65,12 +79,18 @@ function getHolidays(y) {
         happy(10, 2, {ja:"スポーツ", en:"Sports"});
         const shun = Math.floor(20.8431 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4));
         const shub = Math.floor(23.2488 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4));
-        add(3, shun, {ja:"春分の日", en:"Equinox"}); add(9, shub, {ja:"秋分の日", en:"Equinox"});
+        add(3, shun, {ja:"春分の日", en:"Equinox"}); 
+        add(9, shub, {ja:"秋分の日", en:"Equinox"});
         
         Object.keys(h).sort().forEach(k => {
-            let d = new Date(k); if(d.getDay() === 0) {
-                let n = new Date(d); let nk;
-                do { n.setDate(n.getDate()+1); nk = `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; } while(h[nk]);
+            let d = new Date(k); 
+            if(d.getDay() === 0) {
+                let n = new Date(d); 
+                let nk;
+                do { 
+                    n.setDate(n.getDate()+1); 
+                    nk = `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; 
+                } while(h[nk]);
                 h[nk] = {ja:"振替休日", en:"Sub. Hol."};
             }
         });
@@ -120,92 +140,181 @@ function getHolidays(y) {
         add(12, 26, {ja:"聖ステファノ祝日", it:"Santo Stefano"});
         addRelativeEaster(1, {ja:"イースター・マンデー", it:"Lunedì dell'Angelo"});
     } else {
-        // アメリカ（その他の言語用共通テンプレート）
         add(1, 1, {ja:"元日", en:"New Year's Day"});
         happy(1, 3, {ja:"MLK記念日", en:"MLK Day"});
         happy(2, 3, {ja:"大統領の日", en:"Presidents' Day"});
-        let mem = new Date(y, 4, 31); while(mem.getDay() !== 1) { mem.setDate(mem.getDate() - 1); }
+        let mem = new Date(y, 4, 31); 
+        while(mem.getDay() !== 1) { mem.setDate(mem.getDate() - 1); }
         add(5, mem.getDate(), {ja:"戦没将兵追悼", en:"Memorial Day"});
-        add(6, 19, {ja:"独立記念", en:"Juneteenth"}); add(7, 4, {ja:"独立記念日", en:"Independence"});
-        happy(9, 1, {ja:"労働感謝", en:"Labor Day"}); happy(10, 2, {ja:"コロンブス", en:"Columbus Day"});
+        add(6, 19, {ja:"独立記念", en:"Juneteenth"}); 
+        add(7, 4, {ja:"独立記念日", en:"Independence"});
+        happy(9, 1, {ja:"労働感謝", en:"Labor Day"}); 
+        happy(10, 2, {ja:"コロンブス", en:"Columbus Day"});
         add(11, 11, {ja:"復員軍人", en:"Veterans Day"});
-        happy(11, 4, {ja:"感謝祭", en:"Thanksgiving"}); add(12, 25, {ja:"クリスマス", en:"Christmas"});
+        happy(11, 4, {ja:"感謝祭", en:"Thanksgiving"}); 
+        add(12, 25, {ja:"クリスマス", en:"Christmas"});
     }
     return h;
 }
 
+// 六曜計算ロジック
 function getRokuyo(y,m,d) {
     const list = ["大安","赤口","先勝","友引","先負","仏滅"];
     return list[(Math.floor((new Date(y,m,d)-new Date(2020,0,1))/86400000)+4)%6];
 }
 
+// --- カレンダー描画関数 ---
 function renderCalendar() {
-    const t = i18n[currentLang];
-    document.getElementById('yearDisplayTop').textContent = currentYear;
+    const state = getAppState();
+    const t = i18n[state.lang];
+    
+    document.getElementById('yearDisplayTop').textContent = state.year;
     document.getElementById('prevBtn').textContent = t.nav[0];
     document.getElementById('nextBtn').textContent = t.nav[1];
+    
     const labels = document.querySelectorAll('.menu-label');
     t.labels.forEach((l,i) => { if(labels[i]) labels[i].textContent = l; });
     document.getElementById('holidayListTitle').textContent = t.labels[4];
+    
     const container = document.getElementById('yearContainer');
     const hGrid = document.getElementById('holidayGrid');
-    container.innerHTML = ''; hGrid.innerHTML = '';
-    const holidays = getHolidays(currentYear);
+    container.innerHTML = ''; 
+    hGrid.innerHTML = '';
+    
+    const holidays = getHolidays(state.year);
     const now = new Date();
     const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    
     for (let m=0; m<12; m++) {
         const card = document.createElement('div');
         card.className = 'month-card';
         let html = `<div class="month-title">${t.months(m)}</div><table><thead><tr>`;
+        
         for (let i=0; i<7; i++) {
-            let idx = (i+startDayOfWeek)%7;
+            let idx = (i + state.start) % 7;
             html += `<th class="${idx===0?'bg-sun-holiday':(idx===6?'bg-sat':'')}">${t.days[idx]}</th>`;
         }
         html += `</tr></thead><tbody>`;
-        let first = new Date(currentYear, m, 1).getDay();
-        let last = new Date(currentYear, m+1, 0).getDate();
-        let offset = (first - startDayOfWeek + 7) % 7;
+        
+        let first = new Date(state.year, m, 1).getDay();
+        let last = new Date(state.year, m+1, 0).getDate();
+        let offset = (first - state.start + 7) % 7;
         let d = 1;
+        
         for (let r=0; r<6; r++) {
             html += `<tr>`;
             for (let c=0; c<7; c++) {
                 let cellIdx = r*7 + c;
                 if(cellIdx < offset || d > last) html += `<td></td>`;
                 else {
-                    let key = `${currentYear}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                    let dow = (cellIdx + startDayOfWeek)%7;
+                    let key = `${state.year}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                    let dow = (cellIdx + state.start) % 7;
                     let cls = (holidays[key] || dow===0)?'bg-sun-holiday':(dow===6?'bg-sat':'');
                     if(key === todayStr) cls += ' today-cell';
+                    
                     html += `<td class="${cls}"><span class="date-num">${d}</span>`;
-                    if(showRokuyo && currentLang==='ja') html += `<span class="rokuyo">${getRokuyo(currentYear, m, d)}</span>`;
-                    html += `</td>`; d++;
+                    if(state.rokuyo && state.lang==='ja') {
+                        html += `<span class="rokuyo">${getRokuyo(state.year, m, d)}</span>`;
+                    }
+                    html += `</td>`; 
+                    d++;
                 }
             }
-            html += `</tr>`; if(d > last) break;
+            html += `</tr>`; 
+            if(d > last) break;
         }
         card.innerHTML = html + `</tbody></table>`;
         container.appendChild(card);
     }
+    
     Object.keys(holidays).sort().forEach(k => {
         const [y,m,d] = k.split('-');
-        hGrid.innerHTML += `<div class="holiday-item"><span class="holiday-date">${m}/${d}</span><span>${holidays[k][currentLang]}</span></div>`;
+        const holidayName = holidays[k][state.lang] || holidays[k]['en'] || holidays[k]['ja'];
+        hGrid.innerHTML += `<div class="holiday-item"><span class="holiday-date">${m}/${d}</span><span>${holidayName}</span></div>`;
     });
 }
 
-function toggleMenu() { document.getElementById('sidePanel').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
-function setTheme(m) { document.documentElement.setAttribute('data-theme', m); document.getElementById('themeLight').classList.toggle('active', m==='light'); document.getElementById('themeDark').classList.toggle('active', m==='dark'); }
-function setLang(l) { 
-    currentLang = l;
+// --- UI状態同期関数 ---
+function syncViewWithURL() {
+    const state = getAppState();
+
+    // ① テーマの変更適用
+    document.documentElement.setAttribute('data-theme', state.theme);
+    document.getElementById('themeLight').classList.toggle('active', state.theme === 'light');
+    document.getElementById('themeDark').classList.toggle('active', state.theme === 'dark');
+
+    // ② 言語ボタンのアクティブ状態
     document.querySelectorAll('#langSelector .btn-toggle').forEach(b => {
         const txt = b.textContent;
-        b.classList.toggle('active', (l==='ja'&&txt==='JP') || (l==='en'&&txt==='EN') || (txt.toLowerCase()===l));
+        const isActive = (state.lang==='ja'&&txt==='JP') || (state.lang==='en'&&txt==='EN') || (txt.toLowerCase()===state.lang);
+        b.classList.toggle('active', isActive);
     });
-    document.getElementById('rokuyoMenu').style.display = (l==='ja' ? 'block' : 'none');
-    renderCalendar(); 
-}
-function setStartDay(d) { startDayOfWeek = d; document.getElementById('startSun').classList.toggle('active', d===0); document.getElementById('startMon').classList.toggle('active', d===1); renderCalendar(); }
-function toggleRokuyo(b) { showRokuyo = b; document.getElementById('rokuyoOn').classList.toggle('active', b); document.getElementById('rokuyoOff').classList.toggle('active', !b); renderCalendar(); }
+    document.getElementById('rokuyoMenu').style.display = (state.lang === 'ja' ? 'block' : 'none');
 
-document.getElementById('prevBtn').onclick = () => { currentYear--; renderCalendar(); };
-document.getElementById('nextBtn').onclick = () => { currentYear++; renderCalendar(); };
-renderCalendar();
+    // ③ 週の開始日ボタンのアクティブ状態
+    document.getElementById('startSun').classList.toggle('active', state.start === 0);
+    document.getElementById('startMon').classList.toggle('active', state.start === 1);
+
+    // ④ 六曜ボタンのアクティブ状態
+    document.getElementById('rokuyoOn').classList.toggle('active', state.rokuyo);
+    document.getElementById('rokuyoOff').classList.toggle('active', !state.rokuyo);
+
+    // ⑤ カレンダーを描画
+    renderCalendar();
+}
+
+// --- その他のメニュー・モーダル操作 ---
+function toggleMenu() { 
+    document.getElementById('sidePanel').classList.toggle('open'); 
+    document.getElementById('overlay').classList.toggle('show'); 
+}
+
+function openYearModal() {
+    const modal = document.getElementById('yearModal');
+    const list = document.getElementById('yearList');
+    const overlay = document.getElementById('overlay');
+    const state = getAppState();
+    const t = i18n[state.lang];
+    
+    document.getElementById('modalTitle').textContent = t.modal[0];
+    document.getElementById('modalCloseBtn').textContent = t.modal[1];
+    list.innerHTML = '';
+    
+    for(let i = state.year - 50; i <= state.year + 50; i++) {
+        const item = document.createElement('div');
+        item.className = 'year-item' + (i === state.year ? ' active' : '');
+        item.textContent = i;
+        item.onclick = () => { 
+            updateURLParam('year', i); 
+            closeYearModal(); 
+        };
+        list.appendChild(item);
+        if(i === state.year) setTimeout(() => item.scrollIntoView({block: 'center'}), 10);
+    }
+    modal.classList.add('show'); 
+    overlay.classList.add('show');
+}
+
+function closeYearModal() {
+    document.getElementById('yearModal').classList.remove('show');
+    document.getElementById('overlay').classList.remove('show');
+}
+
+function handleOverlayClick() {
+    closeYearModal(); 
+    document.getElementById('sidePanel').classList.remove('open');
+}
+
+// --- イベント設定と初期起動 ---
+document.getElementById('prevBtn').onclick = () => { 
+    updateURLParam('year', getAppState().year - 1); 
+};
+document.getElementById('nextBtn').onclick = () => { 
+    updateURLParam('year', getAppState().year + 1); 
+};
+
+// ハッシュ変更イベント（file:// スキームで動作するための鍵）
+window.addEventListener('hashchange', syncViewWithURL);
+
+// 初回起動
+document.addEventListener('DOMContentLoaded', syncViewWithURL);

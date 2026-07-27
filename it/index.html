@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Multilingual Calendar - IT</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="canonical" href="index.html">
+    <link rel="alternate" hreflang="ja" href="/ja/index.html" />
+    <link rel="alternate" hreflang="en" href="/en/index.html" />
+    <link rel="alternate" hreflang="fr" href="/fr/index.html" />
+    <link rel="alternate" hreflang="de" href="/de/index.html" />
+    <link rel="alternate" hreflang="es" href="/es/index.html" />
+    <link rel="alternate" hreflang="it" href="/it/index.html" />
+    <link rel="alternate" hreflang="x-default" href="/en/index.html" />
+</head>
+<body>
+    <header class="top-header">
+        <button class="header-btn" id="prevBtn"></button>
+        <div class="year-display-top" id="yearDisplayTop" onclick="openYearModal()"></div>
+        <button class="header-btn" id="nextBtn"></button>
+    </header>
+
+    <div class="year-modal" id="yearModal">
+        <div class="year-modal-header" id="modalTitle"></div>
+        <div class="year-list" id="yearList"></div>
+        <div class="year-modal-footer">
+            <button class="modal-close-btn" id="modalCloseBtn" onclick="closeYearModal()"></button>
+        </div>
+    </div>
+
+    <div class="menu-icon" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+    <div class="panel-overlay" id="overlay" onclick="handleOverlayClick()"></div>
+
+    <div class="side-panel" id="sidePanel">
+        <div class="menu-section">
+            <span class="menu-label">MODE</span>
+            <div class="btn-group">
+                <button id="themeLight" class="btn-toggle" onclick="updateURLParam('theme', 'light')">Light</button>
+                <button id="themeDark" class="btn-toggle" onclick="updateURLParam('theme', 'dark')">Dark</button>
+            </div>
+        </div>
+        <div class="menu-section"><span class="menu-label">LANGUAGE</span><div class="btn-group" id="langSelector"><button class="btn-toggle" onclick="navigateLanguage('ja')">JP</button><button class="btn-toggle" onclick="navigateLanguage('en')">EN</button><button class="btn-toggle" onclick="navigateLanguage('fr')">FR</button><button class="btn-toggle" onclick="navigateLanguage('de')">DE</button><button class="btn-toggle" onclick="navigateLanguage('es')">ES</button><button class="btn-toggle" onclick="navigateLanguage('it')">IT</button></div></div>
+        <div class="menu-section"><span class="menu-label">WEEK START</span><div class="btn-group"><button id="startSun" class="btn-toggle" onclick="updateURLParam('start', '0')">Sun</button><button id="startMon" class="btn-toggle" onclick="updateURLParam('start', '1')">Mon</button></div></div>
+        <div class="menu-section" id="rokuyoMenu"><span class="menu-label">ROKUYO</span><div class="btn-group"><button id="rokuyoOn" class="btn-toggle" onclick="updateURLParam('rokuyo', 'true')">ON</button><button id="rokuyoOff" class="btn-toggle" onclick="updateURLParam('rokuyo', 'false')">OFF</button></div></div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="year-container" id="yearContainer"></div>
+        <div class="holiday-list-section"><h3 id="holidayListTitle" style="margin-bottom:20px; font-size:1.1rem; color:var(--btn-gray);"></h3><div class="holiday-grid" id="holidayGrid"></div></div>
+    </div>
+
+    <script>
+        const DEFAULTS = {
+            lang: 'it'
+        };
+    </script>
+    <script src="../javascript/calendar.js"></script>
+</body>
+</html>
