@@ -38,7 +38,7 @@ function updateURLParam(key, value) {
 // --- 言語切り替え時の処理（ハッシュを連れて隣のフォルダへ） ---
 function navigateLanguage(targetLang) {
     if (targetLang === DEFAULTS.lang) return;
-    window.location.href = `../${targetLang}/index.html` + window.location.hash;
+    window.location.href = `../${targetLang}` + window.location.hash;
 }
 
 // --- 祝日データ計算ロジック ---
