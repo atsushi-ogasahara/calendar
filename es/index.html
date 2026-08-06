@@ -5,6 +5,7 @@
     <meta name="google-site-verification" content="pPW5P428T-qloPdu_Ho_XZSA3aO-B0L-JEX5rXoj-fU" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>fazzCalendar - ES</title>
+    <meta id="meta-description" name="description" content="Calendario en línea simple. Consulta rápidamente las fechas del calendario, las fiestas próximas y los días de la semana en tu navegador.">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="icon" href="../images/favicon.ico">
     <link rel="canonical" href="https://fazzcalendar.netlify.app/es/">
@@ -53,6 +54,13 @@
     </div>
 
     <script>
+        (function() {
+            const thisYear = new Date().getFullYear(); 
+            document.title = `Calendario en línea simple ${thisYear} ES`;
+            const descText = `Calendario en línea simple para el año ${thisYear}. Consulta rápidamente las fechas del calendario, las fiestas próximas y los días de la semana en tu navegador.`;
+            document.getElementById('meta-description').setAttribute('content', descText);
+        })();
+
         const DEFAULTS = {
             lang: 'es'
         };

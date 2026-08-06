@@ -74,7 +74,7 @@ html, body {
 
 .year-container { display: grid; grid-template-columns: repeat(4, 1fr); border-left: 2.5px solid var(--border-main); border-top: 2.5px solid var(--border-main); }
 .month-card { background: var(--bg-card); border-right: 2.5px solid var(--border-main); border-bottom: 2.5px solid var(--border-main); }
-.month-title { text-align: center; font-weight: 700; background: var(--bg-header); padding: 12px 0; font-size: 1rem; border-bottom: 2px solid var(--border-main); color: var(--btn-gray); letter-spacing: 2px; }
+.month-title { text-align: center; font-weight: 700; background: var(--bg-header); padding: 12px 0; font-size: 1rem; border-bottom: 2px solid var(--border-main); color: var(--btn-gray); letter-spacing: 2px; margin: 0; }
         
 table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 th { font-size: 0.6rem; color: #abb2b9; padding: 8px 0; border-right: 1.5px solid var(--border-sub); border-bottom: 1.5px solid var(--border-sub); background: var(--bg-header); font-weight: 600; }

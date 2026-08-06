@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="pPW5P428T-qloPdu_Ho_XZSA3aO-B0L-JEX5rXoj-fU" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fazzCalendar - JA</title>
+    <meta id="meta-description" name="description" content="シンプルなオンラインカレンダーです。日付、これからの祝日、曜日をブラウザ上ですぐに確認できます。">
+    <title>fazzカレンダー JA</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="icon" href="../images/favicon.ico">
     <link rel="canonical" href="https://fazzcalendar.netlify.app/ja/">
@@ -19,7 +20,7 @@
 <body>
     <header class="top-header">
         <button class="header-btn" id="prevBtn"></button>
-        <div class="year-display-top" id="yearDisplayTop" onclick="openYearModal()"></div>
+        <h1 class="year-display-top" id="yearDisplayTop" onclick="openYearModal()"></h1>
         <button class="header-btn" id="nextBtn"></button>
     </header>
 
@@ -53,6 +54,13 @@
     </div>
 
     <script>
+        (function() {
+            const thisYear = new Date().getFullYear(); 
+            document.title = `${thisYear}年カレンダー JA`;
+            const descText = `${thisYear}年のシンプルなオンラインカレンダーです。日付、これからの祝日、曜日をブラウザ上ですぐに確認できます。`;
+            document.getElementById('meta-description').setAttribute('content', descText);
+        })();
+
         const DEFAULTS = {
             lang: 'ja'
 

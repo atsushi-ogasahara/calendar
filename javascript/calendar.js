@@ -188,7 +188,7 @@ function renderCalendar() {
     for (let m=0; m<12; m++) {
         const card = document.createElement('div');
         card.className = 'month-card';
-        let html = `<div class="month-title">${t.months(m)}</div><table><thead><tr>`;
+        let html = `<h2 class="month-title">${t.months(m)}</h2><table><thead><tr>`;
         
         for (let i=0; i<7; i++) {
             let idx = (i + state.start) % 7;
