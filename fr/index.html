@@ -56,14 +56,10 @@
     <script>
         (function() {
             const thisYear = new Date().getFullYear(); 
-            document.title = `Calendrier en ligne simple ${thisYear} FR`;
+            document.title = `Calendrier ${thisYear} FR`;
             const descText = `Calendrier en ligne simple pour l'année ${thisYear}. Consultez rapidement les dates du calendrier, les fêtes à venir et les jours de la semaine dans votre navigateur.`;
             document.getElementById('meta-description').setAttribute('content', descText);
         })();
-
-        const DEFAULTS = {
-            lang: 'fr'
-        };
     </script>
     <script src="../javascript/calendar.js"></script>
 </body>
