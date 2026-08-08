@@ -50,7 +50,10 @@
 
     <div class="main-wrapper">
         <div class="year-container" id="yearContainer"></div>
-        <div class="holiday-list-section"><h3 id="holidayListTitle" style="margin-bottom:20px; font-size:1.1rem; color:var(--btn-gray);"></h3><div class="holiday-grid" id="holidayGrid"></div></div>
+        <div class="holiday-list-section">
+            <h3 id="holidayListTitle" style="margin-bottom:20px; font-size:1.1rem; color:var(--btn-gray);"></h3>
+            <div class="holiday-grid" id="holidayGrid"></div>
+        </div>
     </div>
 
     <script>
@@ -60,11 +63,6 @@
             const descText = `${thisYear}年のシンプルなオンラインカレンダーです。日付、これからの祝日、曜日をブラウザ上ですぐに確認できます。`;
             document.getElementById('meta-description').setAttribute('content', descText);
         })();
-
-        const DEFAULTS = {
-            lang: 'ja'
-
-        };
     </script>
     <script src="../javascript/calendar.js"></script>
 </body>

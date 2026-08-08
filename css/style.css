@@ -17,6 +17,22 @@
     --bg-today: #1b3a24; --text-today: #a5d6a7;
 }
 
+[data-theme="dark"] .holiday-item {
+    background-color: #1a202c; /* ダークモード用のカード背景色 */
+    border-color: #2d3748;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .holiday-name {
+    background-color: #1a202c;
+    color: #e2e8f0;            /* ダークモード用の明るい文字色 */
+}
+
+[data-theme="dark"] .holiday-date {
+    color: #fc8181;            /* ダークモードで見やすい少し明るい赤 */
+    background-color: #2d1e1e; /* ダークモード用の深い赤背景 */
+}
+
 html, body { 
     margin: 0; padding: 0; background: var(--bg-body); 
     font-family: "Helvetica Neue", Arial, sans-serif; 
@@ -92,10 +108,74 @@ td { text-align: center; height: 55px; border-right: 1.5px solid var(--border-su
 }
 .today-cell .date-num, .today-cell .rokuyo { color: var(--text-today) !important; }
 
-.holiday-list-section { padding: 40px 0; border-top: 2.5px solid var(--border-main); margin-top: 30px; }
-.holiday-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; font-size: 0.85rem; }
-.holiday-item { display: flex; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--border-sub); }
-.holiday-date { font-weight: 700; color: var(--color-sun-holiday); margin-right: 12px; padding-right: 10px; border-right: 2px solid var(--border-sub); min-width: 60px; text-align: center; }
+/* 1. リスト全体のコンテナ（親のul） */
+.holiday-list-ul {
+    list-style: none;         /* デフォルトの●ドットを消す */
+    padding: 0;
+    margin: 1.5rem 0 0 0;
+    
+    /* 2列のグリッド配置（スマホは1列、画面が広くなると自動で2〜3列になります） */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0;                /* アイテム同士の隙間 */
+}
+
+/* 2. 各祝日アイテム（子のli） */
+.holiday-item {
+    display: flex;
+    align-items: center;      /* 日付と祝日名を上下中央で揃える */
+    padding: 10px 14px;
+    background-color: var(--card-bg, #ffffff); /* 背景色（変数、無ければ白） */
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 8px;       /* 角丸 */
+    box-shadow: none;
+    overflow: visible; 
+}
+
+/* 3. 日付部分（<time> タグ） */
+.holiday-date {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;         /* 太字 */
+    font-size: 0.95rem;
+    color: #e53e3e;           /* 祝日らしいパッと目を引く赤色 */
+    background-color: #fff5f5; /* 薄い赤の背景 */
+    padding: 4px 8px;
+    border-radius: 6px;       /* 日付バッジ風の角丸 */
+    margin-right: 14px;       /* 祝日名との間隔 */
+    min-width: 48px;          /* 「10/12」など文字数が変わっても幅を固定 */
+    text-align: center;
+    flex-shrink: 0;           /* 画面が狭くなっても日付が潰れないように固定 */
+}
+
+/* 4. 祝日名部分（<span> タグ） */
+.holiday-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-color, #2d3748); /* 文字色（ダークグレー） */
+    white-space: nowrap;      /* 文字の途中で改行させない */
+    overflow: hidden;
+    text-overflow: ellipsis;  /* 長すぎる祝日名は「...」で省略 */
+
+    background-color: var(--card-bg, #ffffff);
+    position: relative;
+    z-index: 1;
+}
+
+.holiday-item:hover .holiday-name {
+    /* 省略制限をその場で解除 */
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap; /* 改行はさせず、1行のまま右へ伸ばす */
+
+    /* マス目の右枠線を飛び越えて、右側へどこまでも文字を伸ばす */
+    width: max-content; 
+    
+    /* 隣の列（右側のマス）の文字や線の上に重なるように最前面へ引き上げる */
+    z-index: 999; 
+    
+    /* 文字の右側に少しだけ余白を作って読みやすくする */
+    padding-right: 12px; 
+}
 
 @media (max-width: 1200px) { .year-container { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { 

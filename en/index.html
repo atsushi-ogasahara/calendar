@@ -56,14 +56,10 @@
     <script>
         (function() {
             const thisYear = new Date().getFullYear(); 
-            document.title = `${thisYear} Simple Online Calendar EN`;
+            document.title = `${thisYear} Calendar EN`;
             const descText = `Simple online calendar for ${thisYear}. Quickly view calendar dates, upcoming holidays, and days of the week in your browser.`;
             document.getElementById('meta-description').setAttribute('content', descText);
         })();
-
-        const DEFAULTS = {
-            lang: 'en'
-        };
     </script>
     <script src="../javascript/calendar.js"></script>
 </body>
