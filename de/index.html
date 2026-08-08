@@ -5,6 +5,7 @@
     <meta name="google-site-verification" content="pPW5P428T-qloPdu_Ho_XZSA3aO-B0L-JEX5rXoj-fU" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>fazzCalendar - DE</title>
+    <meta id="meta-description" name="description" content="Einfacher Online-Kalender. Sehen Sie schnell die Kalenderdaten, bevorstehende Feiertage und Wochentage in Ihrem Browser an.">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="icon" href="../images/favicon.ico">
     <link rel="canonical" href="https://fazzcalendar.netlify.app/de/">
@@ -53,9 +54,12 @@
     </div>
 
     <script>
-        const DEFAULTS = {
-            lang: 'de'
-        };
+        (function() {
+            const thisYear = new Date().getFullYear(); 
+            document.title = `Kalender ${thisYear} DE`;
+            const descText = `Einfacher Online-Kalender für das Jahr ${thisYear}. Sehen Sie schnell die Kalenderdaten, bevorstehende Feiertage und Wochentage in Ihrem Browser an.`;
+            document.getElementById('meta-description').setAttribute('content', descText);
+        })();
     </script>
     <script src="../javascript/calendar.js"></script>
 </body>

@@ -1,44 +1,125 @@
 // --- 多言語対応データの定義 ---
 const i18n = {
-    ja: { labels: ["モード","言語","週開始","六曜","祝日一覧"], nav: ["前年","次年"], modal: ["年を選択","キャンセル"], days: ["日","月","火","水","木","金","土"], months: m=>`${m+1}月` },
-    en: { labels: ["THEME","LANGUAGE","WEEK START","ROKUYO","Holiday List"], nav: ["Prev Year","Next Year"], modal: ["Select Year","Cancel"], days: ["SUN","MON","TUE","WED","THU","FRI","SAT"], months: m=>["January","February","March","April","May","June","July","August","September","October","November","December"][m] },
-    fr: { labels: ["MODE","LANGUE","DÉBUT","ROKUYO","Jours fériés"], nav: ["Année préc.","Année suiv."], modal: ["Choisir l'année","Annuler"], days: ["DIM","LUN","MAR","MER","JEU","VEN","SAM"], months: m=>["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][m] },
-    de: { labels: ["MODUS","SPRACHE","START","ROKUYO","Feiertage"], nav: ["Vorheriges Jahr","Nächstes Jahr"], modal: ["Jahr wählen","Abbrechen"], days: ["SO","MO","DI","MI","DO","FR","SA"], months: m=>["Januar","Februar","März","April","Mai","Juin","Juli","Août","September","Oktober","November","Dezember"][m] },
-    es: { labels: ["MODO","IDIOMA","INICIO","ROKUYO","Lista de festivos"], nav: ["Año anterior","Año siguiente"], modal: ["Elegir año","Cancelar"], days: ["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"], months: m=>["Enero","Février","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][m] },
-    it: { labels: ["MODO","LINGUA","INIZIO","ROKUYO","Festività"], nav: ["Anno prec.","Anno succ."], modal: ["Scegli anno","Annulla"], days: ["DOM","LUN","MAR","MER","GIO","VEN","SAB"], months: m=>["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"][m] }
+    ja: { 
+        labels: ["モード","言語","週開始","六曜","祝日一覧"],
+        nav: ["前年","次年"],
+        modal: ["年を選択","キャンセル"],
+        days: ["日","月","火","水","木","金","土"],
+        months: m=>`${m+1}月`,
+        updateTitle: "{year}年カレンダー JA",
+        updateDesc: "{year}年のシンプルなオンラインカレンダーです。日付、これからの祝日、曜日をブラウザ上ですぐに確認できます。"
+    },
+    en: {
+        labels: ["THEME","LANGUAGE","WEEK START","ROKUYO","Holiday List"],
+        nav: ["Prev Year","Next Year"],
+        modal: ["Select Year","Cancel"],
+        days: ["SUN","MON","TUE","WED","THU","FRI","SAT"],
+        months: m=>["January","February","March","April","May","June","July","August","September","October","November","December"][m],
+        updateTitle: "{year} Calendar EN",
+        updateDesc: "Simple online calendar for {year}. Quickly view calendar dates, upcoming holidays, and days of the week in your browser."
+    },
+    fr: {
+        labels: ["MODE","LANGUE","DÉBUT","ROKUYO","Jours fériés"],
+        nav: ["Année préc.","Année suiv."],
+        modal: ["Choisir l'année","Annuler"],
+        days: ["DIM","LUN","MAR","MER","JEU","VEN","SAM"],
+        months: m=>["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][m],
+        updateTitle: "Calendrier {year} FR",
+        updateDesc: "Calendrier en ligne simple pour {year}. Consultez rapidement les dates du calendrier, les jours fériés à venir et les jours de la semaine dans votre navigateur."
+    },
+    de: {
+        labels: ["MODUS","SPRACHE","START","ROKUYO","Feiertage"],
+        nav: ["Vorheriges Jahr","Nächstes Jahr"],
+        modal: ["Jahr wählen","Abbrechen"],
+        days: ["SO","MO","DI","MI","DO","FR","SA"],
+        months: m=>["Januar","Februar","März","April","Mai","Juin","Juli","Août","September","Oktober","November","Dezember"][m],
+        updateTitle: "Kalender {year} DE",
+        updateDesc: "Einfacher Online-Kalender für {year}. Schnelle Ansicht von Kalendertagen, bevorstehenden Feiertagen und Wochentagen in Ihrem Browser."
+    },
+    es: {
+        labels: ["MODO","IDIOMA","INICIO","ROKUYO","Lista de festivos"],
+        nav: ["Año anterior","Año siguiente"],
+        modal: ["Elegir año","Cancelar"],
+        days: ["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"],
+        months: m=>["Enero","Février","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][m],
+        updateTitle: "Calendario {year} ES",
+        updateDesc: "Calendario en línea simple para {year}. Vea rápidamente las fechas del calendario, los próximos días festivos y los días de la semana en su navegador."
+    },
+    it: {
+        labels: ["MODO","LINGUA","INIZIO","ROKUYO","Festività"],
+        nav: ["Anno prec.","Anno succ."],
+        modal: ["Scegli anno","Annulla"],
+        days: ["DOM","LUN","MAR","MER","GIO","VEN","SAB"],
+        months: m=>["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"][m],
+        updateTitle: "Calendario {year} IT",
+        updateDesc: "Calendario in linea semplice per {year}. Visualizza rapidamente le date del calendario, le festività imminenti e i giorni della settimana nel tuo browser."
+    }
 };
 
 // --- URLのハッシュ（#）から最新の状態を都度取得（file:// 対応） ---
 function getAppState() {
-    const hash = window.location.hash.substring(1); // 先頭の # を除く
-    const urlParams = new URLSearchParams(hash);
+    const urlParams = new URLSearchParams(window.location.search);
     const yearParam = urlParams.get('year');
-    const startParam = urlParams.get('start');
-    const rokuyoParam = urlParams.get('rokuyo');
+
+    const hashString = window.location.hash.startsWith('#') 
+        ? window.location.hash.slice(1) 
+        : window.location.hash;
+    const hashParams = new URLSearchParams(hashString);
+
+    const startParam = hashParams.get('start');
+    const rokuyoParam = hashParams.get('rokuyo');
+    const themeParam = hashParams.get('theme');
+
+    const pathParts = window.location.pathname.split('/');
+    const supportedLangs = ['ja', 'fr', 'de', 'es', 'it'];
+    const detectedLang = pathParts.find(part => supportedLangs.includes(part)) || 'en';
 
     return {
         year: yearParam ? parseInt(yearParam, 10) : new Date().getFullYear(),
-        lang: DEFAULTS.lang,
+        lang: detectedLang,
         start: startParam ? parseInt(startParam, 10) : 0,
         rokuyo: rokuyoParam === 'true',
-        theme: urlParams.get('theme') || 'light'   
+        theme: themeParam || 'light'   
     };
 }
 
-// --- ハッシュ（#）のユーザー設定値を書き換える ---
+// --- URLの設定値を書き換える ---
 function updateURLParam(key, value) {
-    const hash = window.location.hash.substring(1);
-    const urlParams = new URLSearchParams(hash);
-    urlParams.set(key, value);
-    
-    // ハッシュを書き換える（自動的に hashchange イベントが発火）
-    window.location.hash = urlParams.toString();
+    // 1. 現在の「クエリ（?）」と「ハッシュ（#）」をそれぞれ個別に取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.slice(1));
+
+    if (key === 'year') {
+        // [A] yearの更新：クエリ側に入れる
+        urlParams.set('year', value);
+    } else {
+        // [B] theme, start, rokuyoの更新：ハッシュ側に入れる
+        hashParams.set(key, value);
+    }
+
+    // 2. 組み立て直す（例: ?year=2026#theme=dark&start=0）
+    const queryString = urlParams.toString() ? `?${urlParams.toString()}` : '';
+    const hashString = hashParams.toString() ? `#${hashParams.toString()}` : '';
+    const newUrl = `${window.location.pathname}${queryString}${hashString}`;
+
+    // 3. 【超重要】history.pushState でURL全体をリロードなしで上書き
+    window.history.pushState({ year: getAppState().year }, '', newUrl);
+
+    // 4. history.pushState は自動でイベントを起こさないため、
+    // 画面の同期（ダークモード適用やカレンダー再描画）を手動で即座に実行する
+    syncViewWithURL();
 }
 
 // --- 言語切り替え時の処理（ハッシュを連れて隣のフォルダへ） ---
 function navigateLanguage(targetLang) {
-    if (targetLang === DEFAULTS.lang) return;
-    window.location.href = `../${targetLang}` + window.location.hash;
+    const state = getAppState();
+    if (targetLang === state.lang) return;
+    
+    // 現在のクエリ（?year=）とハッシュ（#）をそのまま結合
+    const currentParams = window.location.search + window.location.hash;
+    
+    // 適切な言語フォルダ（../fr/ など）へ遷移
+    window.location.href = `../${targetLang}/` + currentParams;
 }
 
 // --- 祝日データ計算ロジック ---
@@ -166,15 +247,29 @@ function getRokuyo(y,m,d) {
 // --- カレンダー描画関数 ---
 function renderCalendar() {
     const state = getAppState();
-    const t = i18n[state.lang];
-    
+    const t = i18n[state.lang] || i18n['en'];
+
+    const currentYear = state.year;
+    let titleText = t.updateTitle.replace('{year}', currentYear);
+    document.title = titleText;
+
+    let descText = t.updateDesc.replace('{year}', currentYear);
+    document.getElementById('meta-description').setAttribute('content', descText);
+
     document.getElementById('yearDisplayTop').textContent = state.year;
     document.getElementById('prevBtn').textContent = t.nav[0];
     document.getElementById('nextBtn').textContent = t.nav[1];
     
     const labels = document.querySelectorAll('.menu-label');
     t.labels.forEach((l,i) => { if(labels[i]) labels[i].textContent = l; });
-    document.getElementById('holidayListTitle').textContent = t.labels[4];
+    const listTitleElement = document.getElementById('holidayListTitle');
+    if (listTitleElement) {
+        if (state.lang === 'ja') {
+            listTitleElement.textContent = `${state.year}年の祝日・休日一覧`;
+        } else {
+            listTitleElement.textContent = `List of Holidays in ${state.year}`;
+        }
+    }
     
     const container = document.getElementById('yearContainer');
     const hGrid = document.getElementById('holidayGrid');
@@ -188,7 +283,7 @@ function renderCalendar() {
     for (let m=0; m<12; m++) {
         const card = document.createElement('div');
         card.className = 'month-card';
-        let html = `<div class="month-title">${t.months(m)}</div><table><thead><tr>`;
+        let html = `<h2 class="month-title">${t.months(m)}</h2><table><thead><tr>`;
         
         for (let i=0; i<7; i++) {
             let idx = (i + state.start) % 7;
@@ -227,10 +322,20 @@ function renderCalendar() {
         container.appendChild(card);
     }
     
+    // hGrid（祝日コンテナ）の中身を初期化（今回は <ul> タグとして出力する準備）
+    hGrid.innerHTML = '<ul class="holiday-list-ul"></ul>';
+    const ulContainer = hGrid.querySelector('.holiday-list-ul');
+
     Object.keys(holidays).sort().forEach(k => {
-        const [y,m,d] = k.split('-');
+        const [y, m, d] = k.split('-');
         const holidayName = holidays[k][state.lang] || holidays[k]['en'] || holidays[k]['ja'];
-        hGrid.innerHTML += `<div class="holiday-item"><span class="holiday-date">${m}/${d}</span><span>${holidayName}</span></div>`;
+    
+        // 【SEO対策】div ではなく <li> タグを使い、日付には時間要素を示す <time> タグを導入
+        ulContainer.innerHTML += `
+            <li class="holiday-item">
+                <time datetime="${y}-${m}-${d}" class="holiday-date">${m}/${d}</time>
+                <span class="holiday-name">${holidayName}</span>
+            </li>`;
     });
 }
 
@@ -312,6 +417,9 @@ document.getElementById('prevBtn').onclick = () => {
 document.getElementById('nextBtn').onclick = () => { 
     updateURLParam('year', getAppState().year + 1); 
 };
+
+// 【重要】ブラウザの「戻る・進む」ボタンでクエリパラメータ(?year=)が変わったことを検知して画面を同期
+window.addEventListener('popstate', syncViewWithURL);
 
 // ハッシュ変更イベント（file:// スキームで動作するための鍵）
 window.addEventListener('hashchange', syncViewWithURL);
