@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://fazzcalendar.netlify.app/sitemap.xml
