@@ -2,15 +2,17 @@
 const i18n = {
     ja: { 
         labels: ["モード","言語","週開始","六曜","祝日一覧"],
+        weekStart: ["日曜","月曜"],
         nav: ["前年","次年"],
         modal: ["年を選択","キャンセル"],
         days: ["日","月","火","水","木","金","土"],
         months: m=>`${m+1}月`,
-        updateTitle: "{year}年カレンダー JA",
+        updateTitle: "{year}年カレンダー",
         updateDesc: "{year}年のシンプルなオンラインカレンダーです。日付、これからの祝日、曜日をブラウザ上ですぐに確認できます。"
     },
     en: {
         labels: ["THEME","LANGUAGE","WEEK START","ROKUYO","Holiday List"],
+        weekStart: ["SUN","MON"],
         nav: ["Prev Year","Next Year"],
         modal: ["Select Year","Cancel"],
         days: ["SUN","MON","TUE","WED","THU","FRI","SAT"],
@@ -20,6 +22,7 @@ const i18n = {
     },
     fr: {
         labels: ["MODE","LANGUE","DÉBUT","ROKUYO","Jours fériés"],
+        weekStart: ["DIM","LUN"],
         nav: ["Année préc.","Année suiv."],
         modal: ["Choisir l'année","Annuler"],
         days: ["DIM","LUN","MAR","MER","JEU","VEN","SAM"],
@@ -29,6 +32,7 @@ const i18n = {
     },
     de: {
         labels: ["MODUS","SPRACHE","START","ROKUYO","Feiertage"],
+        weekStart: ["SO","MO"],
         nav: ["Vorheriges Jahr","Nächstes Jahr"],
         modal: ["Jahr wählen","Abbrechen"],
         days: ["SO","MO","DI","MI","DO","FR","SA"],
@@ -38,6 +42,7 @@ const i18n = {
     },
     es: {
         labels: ["MODO","IDIOMA","INICIO","ROKUYO","Lista de festivos"],
+        weekStart: ["DOM","LUN"],
         nav: ["Año anterior","Año siguiente"],
         modal: ["Elegir año","Cancelar"],
         days: ["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"],
@@ -47,6 +52,7 @@ const i18n = {
     },
     it: {
         labels: ["MODO","LINGUA","INIZIO","ROKUYO","Festività"],
+        weekStart: ["DOM","LUN"],
         nav: ["Anno prec.","Anno succ."],
         modal: ["Scegli anno","Annulla"],
         days: ["DOM","LUN","MAR","MER","GIO","VEN","SAB"],
@@ -263,7 +269,10 @@ function renderCalendar() {
     document.getElementById('yearDisplayTop').textContent = state.year;
     document.getElementById('prevBtn').textContent = t.nav[0];
     document.getElementById('nextBtn').textContent = t.nav[1];
-    
+
+    document.getElementById('startSun').textContent = t.weekStart[0];
+    document.getElementById('startMon').textContent = t.weekStart[1];
+
     const labels = document.querySelectorAll('.menu-label');
     t.labels.forEach((l,i) => { if(labels[i]) labels[i].textContent = l; });
     const listTitleElement = document.getElementById('holidayListTitle');
