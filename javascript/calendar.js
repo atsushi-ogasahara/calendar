@@ -111,14 +111,18 @@ function updateURLParam(key, value) {
 }
 
 // --- 言語切り替え時の処理（ハッシュを連れて隣のフォルダへ） ---
-function navigateLanguage(targetLang) {
+function navigateLanguage(event, targetLang) {
+    // 1. まず通常のリンク遷移をキャンセルする
+    event.preventDefault();
+
     const state = getAppState();
+    // 同じ言語が選ばれた場合は何もしない
     if (targetLang === state.lang) return;
     
-    // 現在のクエリ（?year=）とハッシュ（#）をそのまま結合
+    // 2. 現在のクエリ（?year=）とハッシュ（#）をそのまま取得
     const currentParams = window.location.search + window.location.hash;
     
-    // 適切な言語フォルダ（../fr/ など）へ遷移
+    // 3. パラメータを結合して、目的の言語フォルダへ遷移
     window.location.href = `../${targetLang}/` + currentParams;
 }
 
