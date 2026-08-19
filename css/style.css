@@ -84,7 +84,16 @@ html, body {
 .panel-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; z-index: 1800; }
 .panel-overlay.show { display: block; }
         
-.menu-label { font-weight: bold; font-size: 0.75rem; color: var(--btn-gray); margin-bottom: 12px; display: block; border-bottom: 2px solid var(--border-main); padding-bottom: 5px; }
+.menu-label { 
+    font-weight: bold;
+    font-size: 0.75rem;
+    color: var(--btn-gray);
+    margin-top: 10px;
+    margin-bottom: 2px;
+    display:block;
+    border-bottom: 2px solid var(--border-main);
+    padding-bottom: 5px;
+}
 .btn-toggle { background: var(--bg-body); border: 1.5px solid var(--border-main); padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; flex-grow: 1; color: var(--text-main); min-width: 60px; }
 .btn-toggle.active { background: var(--btn-gray); color: #fff; border-color: var(--btn-gray); }
 
@@ -175,6 +184,29 @@ td { text-align: center; height: 55px; border-right: 1.5px solid var(--border-su
     
     /* 文字の右側に少しだけ余白を作って読みやすくする */
     padding-right: 12px; 
+}
+
+/* 言語切り替え用のaタグ */
+a.btn-lang {
+    /* 1. リンクの下線（アンダーライン）を完全に消す */
+    text-decoration: none;
+
+    /* 2. ボタンと同じように余白やサイズが正しく効くようにする */
+    display: inline-block;
+
+    /* 3. ブラウザが勝手に文字色を青にするのを防ぎ、文字色を統一する */
+    color: inherit;
+
+    /* 4. 文字を中央寄せにする */
+    text-align: center;
+
+    /* 5. button要素に合わせるための細かなズレ調整（環境に合わせて調整してください） */
+    box-sizing: border-box;
+}
+
+/* 念のため、マウスを乗せたとき（ホバー時）の下線も非表示にする */
+a.btn-lang:hover {
+    text-decoration: none;
 }
 
 @media (max-width: 1200px) { .year-container { grid-template-columns: repeat(2, 1fr); } }
