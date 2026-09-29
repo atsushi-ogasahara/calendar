@@ -279,6 +279,14 @@ function renderCalendar() {
     if (listTitleElement) {
         if (state.lang === 'ja') {
             listTitleElement.textContent = `${state.year}年の祝日・休日一覧`;
+        } else if (state.lang === 'de') {
+            listTitleElement.textContent = `Liste der Feiertage in ${state.year}`;
+        } else if (state.lang === 'es') {
+            listTitleElement.textContent = `Lista de Festivos en ${state.year}`;
+        } else if (state.lang === 'fr') {
+            listTitleElement.textContent = `Liste des Fêtes en ${state.year}`;
+        } else if (state.lang === 'it') {
+            listTitleElement.textContent = `Lista di Festività in ${state.year}`;
         } else {
             listTitleElement.textContent = `List of Holidays in ${state.year}`;
         }
