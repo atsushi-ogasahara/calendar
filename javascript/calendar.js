@@ -129,7 +129,7 @@ function navigateLanguage(event, targetLang) {
     const currentParams = window.location.search + window.location.hash;
     
     // 3. パラメータを結合して、目的の言語フォルダへ遷移
-    window.location.href = `../${targetLang}/` + currentParams;
+    window.location.replace(`/${targetLang}/` + currentParams);
 }
 
 // --- 祝日データ計算ロジック ---
